@@ -7,5 +7,5 @@
 - import db data2.sql ke MySQL
 - copy .env.example ke .env
 - masukin db user password database
-- tambah 1 variable API_WEATHER di .env
+- tambah 1 variable API_WEATHER di .env yg didapet dari openweathermap api
 - php artisan serve / akses http://{address}/gocuaca/public/
