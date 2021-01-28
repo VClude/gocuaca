@@ -20,6 +20,7 @@
             }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
+        <script src="https://momentjs.com/downloads/moment.min.js"></script>  
 
     </head>
     <body class="antialiased">
@@ -38,6 +39,9 @@
 
     <select class="form-control" name="kelurahan" id="kelurahan">
     </select>
+
+    <select class="form-control" name="tanggal" id="tanggal">
+    </select>
     <h2>Weather</h2>
     <div id="content">
     </div>
@@ -48,6 +52,7 @@
 
     </body>
     <script type="text/javascript">
+    let kelurahan = '';
 $('#prov_cl').change(function(){
     var nid = $(this).val();
     if(nid){
@@ -114,29 +119,102 @@ $('#kecamatan').change(function(){
         }
 });
 
+
 $('#kelurahan').change(function(){
+    var nid = $(this).val();
+    kelurahan = nid;
+    if(nid){
+        $("#tanggal").empty();
+        $("#tanggal").append("<option value='"+moment().format('YYYY-MM-DD')+"'>"+  moment().format('DD-MM-YYYY') +"</option>");
+        $("#tanggal").append("<option value='"+moment().add(1, 'days').format('YYYY-MM-DD')+"'>"+  moment().add(1, 'days').format('DD-MM-YYYY') +"</option>");
+        $("#tanggal").append("<option value='"+moment().add(2, 'days').format('YYYY-MM-DD')+"'>"+  moment().add(2, 'days').format('DD-MM-YYYY') +"</option>");
+        $("#tanggal").append("<option value='"+moment().add(3, 'days').format('YYYY-MM-DD')+"'>"+  moment().add(3, 'days').format('DD-MM-YYYY') +"</option>");
+        $("#tanggal").append("<option value='"+moment().add(4, 'days').format('YYYY-MM-DD')+"'>"+  moment().add(4, 'days').format('DD-MM-YYYY') +"</option>");
+        $("#tanggal").append("<option value='"+moment().add(5, 'days').format('YYYY-MM-DD')+"'>"+  moment().add(5, 'days').format('DD-MM-YYYY') +"</option>");
+
+        }
+});
+
+$('#tanggal').change(function(){
     var nid = $(this).val();
     if(nid){
         $.ajax({
            type:"get",
-           url:`{{ route('get.weather') }}/${nid}`,
+           url:`{{ route('get.weatherdate') }}/${kelurahan}/${nid}`,
            success:function(res)
-           {       
-                if(res)
+           {  
+            if(res)
                 {
                     $("#content").empty();
-                    $.each(res.weather[0],function(key,value){
-                        $("#content").append("<p>"+key+' : '+value+"</p>");
+                    Object.keys(res).forEach((key, index) => {
+                        $("#content").append("<h2>"+res[index]['dt_txt']+"</p>");
+                            $.each(res[index]['weather'][0],function(k,v){
+                            $("#content").append("<p>"+k+' : '+v+"</p>");
+                        });
+
                     });
+
+
                     $("#main").empty();
-                    $.each(res.main,function(key,value){
-                        $("#main").append("<p>"+key+' : '+value+"</p>");
+                    Object.keys(res).forEach((key, index) => {
+                        $("#main").append("<h2>"+res[index]['dt_txt']+"</p>");
+                            $.each(res[index]['main'],function(k,v){
+                            $("#main").append("<p>"+k+' : '+v+"</p>");
+                        });
+
                     });
+                    // $.each(res,function(key,value){
+                    //     console.log(key + ':' + value);
+                        // $("#content").append("<h2>"+res['dt_txt']+"</p>");
+                        // if(key=='weather'){
+                        //     $.each(key,function(k,v){
+                        //     $("#content").append("<p>"+k+' : '+v+"</p>");
+                        // });
+                        // }
+                        
+                    // });
+                    // $("#main").empty();
+                    // $.each(res,function(key,value){
+                    //     $("#main").append("<h2>"+res['dt_txt']+"</p>");
+                    //     if(key=='main'){
+                    //         $.each(key,function(k,v){
+                    //         $("#main").append("<p>"+k+' : '+v+"</p>");
+                    //     });
+                    //     }
+                        
+                    // });
                 }
            }
 
         });
         }
 });
+
+
+// $('#kelurahan').change(function(){
+//     var nid = $(this).val();
+//     if(nid){
+//         $.ajax({
+//            type:"get",
+//            url:`{{ route('get.weatherdate') }}/${nid}`,
+//            success:function(res)
+//            {       
+//                 if(res)
+//                 {
+//                     console.log(res);
+//                     $("#content").empty();
+//                     $.each(res.weather[0],function(key,value){
+//                         $("#content").append("<p>"+key+' : '+value+"</p>");
+//                     });
+//                     $("#main").empty();
+//                     $.each(res.main,function(key,value){
+//                         $("#main").append("<p>"+key+' : '+value+"</p>");
+//                     });
+//                 }
+//            }
+
+//         });
+//         }
+// });
 </script>
 </html>

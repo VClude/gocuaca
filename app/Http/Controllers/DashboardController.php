@@ -19,6 +19,12 @@ class DashboardController extends Controller
         return view('welcome')->with('prov',$prov);
     }
 
+    public function indexDate()
+    {
+        $prov = Pos::select('provinsi')->distinct()->get();
+        return view('bydate')->with('prov',$prov);
+    }
+
     public function getKabupaten($txt)
     {
         if(!$txt){
@@ -62,6 +68,25 @@ class DashboardController extends Controller
         $cuaca = new Weather();
         $info = $cuaca->getCurrentByCity($id.',ID');
         return response()->json($info);    
+    }
+
+    public function getWeatherDate($id,$date)
+    {
+        if(!$id){
+            return response()->json('missing parameter : kelurahan');
+        }
+        if(!$date){
+            return response()->json('missing parameter : date');
+        }
+        $filtered_array =[];
+        $cuaca = new Weather();
+        $info = $cuaca->get3HourlyByCity($id.',ID');
+        foreach($info->list as $i){
+            if (strpos($i->dt_txt, $date) !== false) {
+                array_push($filtered_array, $i);
+            }
+        }
+        return response()->json($filtered_array);    
     }
     /**
      * Show the form for creating a new resource.
